@@ -70,10 +70,10 @@ def print_books_for_course(dept, num, sect):
         print(' - Required: ' + str(book['required']))
 
 
-if __name__ == '__main__':
+def get_all_books(filename):
     all_books = []
 
-    with open('courses.csv', 'r') as file:
+    with open(filename, 'r') as file:
         course_reader = csv.reader(file)
         for dept, num, sect in course_reader:
             if dept == "DEPARTMENT" or num == "NUMBER" or sect == "SECTION":
@@ -81,8 +81,17 @@ if __name__ == '__main__':
             book_list_dict = get_books_for_course(dept, num, sect)
             all_books.extend(book_list_dict)
 
-    with open('books.csv', 'w') as file:
+    return all_books
+
+
+def write_all_books(filename, all_books):
+    with open(filename, 'w') as file:
         book_writer = csv.writer(file)
         book_writer.writerow(['TITLE', 'AUTHOR', 'EDITION', 'ISBN', 'REQUIRED'])
         for book in all_books:
             book_writer.writerow([book['title'], book['author'], book['edition'], book['isbn'], str(book['required'])])
+
+
+if __name__ == '__main__':
+    all_books = get_all_books('courses.csv')
+    write_all_books('books.csv', all_books)
