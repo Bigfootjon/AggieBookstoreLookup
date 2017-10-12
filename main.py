@@ -20,7 +20,7 @@ def get_books_for_course(dept, num, sect):
     term = get_term()
 
     headers = {
-        'User-Agent': 'AggieShieldsLookupBot/1.0',
+        'User-Agent': 'AggieBookstoreLookupBot/1.0',
     }
 
     post_data = "<?xml version='1.0' encoding='UTF-8'?><textbookorder><courses>"
