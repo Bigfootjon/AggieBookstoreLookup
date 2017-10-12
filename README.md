@@ -2,7 +2,7 @@
 
 This project automates the process of looking up required books for courses.
 
-### Installation and User
+### Installation and Use
 
 1. Install the packages required to run this program with "pip install -r requirements.txt"
 2. Create the file courses.csv with the current course information (see courses.csv.template for example format)
