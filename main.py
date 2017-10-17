@@ -43,15 +43,16 @@ def get_books_for_course(dept, num, sect):
         dept, num = course_header.contents[1].text.split(' ')
         sect = course_header.contents[2].strip()
         dom_key = str(dept) + "-" + str(num) + "-" + str(sect)
-        books = course_dom.select('div.book-list div.book_desc1.cm_tb_bookInfo')
+        books = course_dom.select('div.book-list')
         book_dict_list = []
         for book_dom in books:
             book_dict = {
-                "title": book_dom.select('a')[0].get('title'),
+                "title": book_dom.select('h1 a')[0].get('title'),
                 "author": book_dom.select('h2 span i')[0].text[3:],
                 "edition": book_dom.select('li.book_c1')[0].text.strip()[8:].strip(),
                 "isbn": book_dom.select('li.book_c2_180616')[0].text[6:].strip(),
-                "required": book_dom.select('h2 span.recommendBookType')[0].text.strip() == 'REQUIRED'
+                "required": book_dom.select('h2 span.recommendBookType')[0].text.strip() == 'REQUIRED',
+                "price": [price.select("span")[0].text.strip()[1:] for price in book_dom.select('ul ul.cm_tb_bookList li.selectableBook') if price['title'] == "BUY NEW "][0]
             }
             book_dict_list.append(book_dict)
         book_cache[dom_key] = book_dict_list
@@ -68,6 +69,7 @@ def print_books_for_course(dept, num, sect):
         print(' - by ' + book['author'])
         print(' - ISBN: ' + book['isbn'])
         print(' - Required: ' + str(book['required']))
+        print(' - Price: ' + book['price'])
 
 
 def get_all_books(filename):
@@ -87,9 +89,9 @@ def get_all_books(filename):
 def write_all_books(filename, all_books):
     with open(filename, 'w') as file:
         book_writer = csv.writer(file)
-        book_writer.writerow(['TITLE', 'AUTHOR', 'EDITION', 'ISBN', 'REQUIRED'])
+        book_writer.writerow(['TITLE', 'AUTHOR', 'EDITION', 'ISBN', 'REQUIRED', 'PRICE'])
         for book in all_books:
-            book_writer.writerow([book['title'], book['author'], book['edition'], book['isbn'], str(book['required'])])
+            book_writer.writerow([book['title'], book['author'], book['edition'], book['isbn'], str(book['required']), book['price']])
 
 
 if __name__ == '__main__':
