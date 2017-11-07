@@ -74,36 +74,20 @@ def get_all_courses(filename):
         for dept, num, sect in course_reader:
             if dept == "DEPARTMENT" or num == "NUMBER" or sect == "SECTION":
                 continue
-            all_courses.append(get_books_for_course(dept, num, sect))
-
-    all_courses.sort(key=lambda o: len(o), reverse=True)
+            all_courses.extend(get_books_for_course(dept, num, sect))
 
     return all_courses
 
 
 def write_all_books(filename, all_courses):
     with open(filename, 'w') as file:
-        rows = []
-
-        for course in all_courses:
-            for i, book in enumerate(course):
-                if i >= len(rows):
-                    rows.append([book])
-                else:
-                    rows[i].append(book)
-
-        header = []
-        for _ in range(len(rows[0])):
-            header.extend(["Book Title", "Author", "Department", "Course", "ISBN", "Amount", "In Library"])
+        header = ["Book Title", "Author", "Department", "Course", "ISBN", "Amount", "In Library"]
 
         book_writer = csv.writer(file)
         book_writer.writerow(header)
 
-        for row in rows:
-            csv_row = []
-            for book in row:
-                csv_row.extend([book['title'] + book['edition'], book['author'], book['dept'], book['num'], book['isbn'], book['price'], ''])
-            book_writer.writerow(csv_row)
+        for book in all_courses:
+            book_writer.writerow([book['title'] + book['edition'], book['author'], book['dept'], book['num'], book['isbn'], book['price'], ''])
 
 
 def get_all_csv_users():
