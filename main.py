@@ -15,7 +15,11 @@ book_cache = {}
 def get_books_for_course(dept, num, sect):
     key = str(dept) + "-" + str(num) + "-" + str(sect)
     if key in book_cache:
-        return book_cache[key]
+        books = book_cache[key]
+        for book in books:
+            book['dept'] = dept
+            book['num'] = num
+        return books
 
     term = get_term()
 
@@ -52,7 +56,9 @@ def get_books_for_course(dept, num, sect):
                 "edition": book_dom.select('li.book_c1')[0].text.strip()[8:].strip(),
                 "isbn": book_dom.select('li.book_c2_180616')[0].text[6:].strip(),
                 "required": book_dom.select('h2 span.recommendBookType')[0].text.strip() == 'REQUIRED',
-                "price": [price.select("span")[0].text.strip()[1:] for price in book_dom.select('ul ul.cm_tb_bookList li.selectableBook') if price['title'] == "BUY NEW "][0]
+                "price": [price.select("span")[0].text.strip()[1:] for price in book_dom.select('ul ul.cm_tb_bookList li.selectableBook') if price['title'] == "BUY NEW "][0],
+                "dept": dept,
+                "num": num
             }
             book_dict_list.append(book_dict)
         book_cache[dom_key] = book_dict_list
@@ -100,7 +106,7 @@ def write_all_books(filename, all_courses):
 
         header = []
         for _ in range(len(rows[0])):
-            header.extend(["TITLE", "AUTHOR", "EDITION", "ISBN", "REQUIRED", "PRICE"])
+            header.extend(["Book Title", "Author", "Department",  "Course", "ISBN", "Amount", "In Library"])
 
         book_writer = csv.writer(file)
         book_writer.writerow(header)
@@ -108,7 +114,7 @@ def write_all_books(filename, all_courses):
         for row in rows:
             csv_row = []
             for book in row:
-                csv_row.extend([book['title'], book['author'], book['edition'], book['isbn'], str(book['required']), book['price']])
+                csv_row.extend([book['title'] + book['edition'], book['author'], book['dept'], book['num'], book['isbn'], book['price'], ''])
             book_writer.writerow(csv_row)
 
 
