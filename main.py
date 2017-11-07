@@ -56,26 +56,14 @@ def get_books_for_course(dept, num, sect):
                 "edition": book_dom.select('li.book_c1')[0].text.strip()[8:].strip(),
                 "isbn": book_dom.select('li.book_c2_180616')[0].text[6:].strip(),
                 "required": book_dom.select('h2 span.recommendBookType')[0].text.strip() == 'REQUIRED',
-                "price": [price.select("span")[0].text.strip()[1:] for price in book_dom.select('ul ul.cm_tb_bookList li.selectableBook') if price['title'] == "BUY NEW "][0],
+                "price": [price.select("span")[0].text.strip()[1:] for price in
+                          book_dom.select('ul ul.cm_tb_bookList li.selectableBook') if price['title'] == "BUY NEW "][0],
                 "dept": dept,
                 "num": num
             }
             book_dict_list.append(book_dict)
         book_cache[dom_key] = book_dict_list
         return book_dict_list
-
-
-def print_books_for_course(dept, num, sect):
-    book_dict_list = get_books_for_course(dept, num, sect)
-    print('************************* ' + dept + '-' + str(num) + '-' + str(sect) + ' *************************')
-
-    for book in book_dict_list:
-        print()  # force a new line
-        print(book['title'] + ' (' + book['edition'] + ' edition)')
-        print(' - by ' + book['author'])
-        print(' - ISBN: ' + book['isbn'])
-        print(' - Required: ' + str(book['required']))
-        print(' - Price: ' + book['price'])
 
 
 def get_all_courses(filename):
@@ -106,7 +94,7 @@ def write_all_books(filename, all_courses):
 
         header = []
         for _ in range(len(rows[0])):
-            header.extend(["Book Title", "Author", "Department",  "Course", "ISBN", "Amount", "In Library"])
+            header.extend(["Book Title", "Author", "Department", "Course", "ISBN", "Amount", "In Library"])
 
         book_writer = csv.writer(file)
         book_writer.writerow(header)
@@ -118,6 +106,16 @@ def write_all_books(filename, all_courses):
             book_writer.writerow(csv_row)
 
 
+def get_all_csv_users():
+    users = []
+    file_name = 'input/courses.csv'
+    users.append({
+        "user": file_name,
+        "books": get_all_courses(file_name)
+    })
+    return users
+
+
 if __name__ == '__main__':
-    all_books = get_all_courses('courses.csv')
-    write_all_books('books.csv', all_books)
+    users = get_all_csv_users()
+    write_all_books('books.csv', users[0]['books'])
