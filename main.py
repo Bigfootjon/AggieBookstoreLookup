@@ -109,6 +109,9 @@ def get_all_csv_users():
         "name": file_name,
         "books": get_all_courses(file_name)
     })
+
+    users.sort(key=lambda o: len(o["books"]), reverse=True)
+
     return users
 
 
