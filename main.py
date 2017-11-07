@@ -98,8 +98,12 @@ def write_all_books(filename, all_courses):
                 else:
                     rows[i].append(book)
 
+        header = []
+        for _ in range(len(rows[0])):
+            header.extend(["TITLE", "AUTHOR", "EDITION", "ISBN", "REQUIRED", "PRICE"])
+
         book_writer = csv.writer(file)
-        book_writer.writerow(["TITLE", "AUTHOR", "EDITION", "ISBN", "REQUIRED", "PRICE"])
+        book_writer.writerow(header)
 
         for row in rows:
             csv_row = []
