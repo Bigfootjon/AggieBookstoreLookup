@@ -1,4 +1,5 @@
 import csv
+import glob
 
 import requests
 from bs4 import BeautifulSoup
@@ -90,11 +91,15 @@ def write_all_books(filename, users):
         else:
             csv_list[0].extend(header_template)
         for i, book in enumerate(user['books']):
-            book_csv = [book['title'] + book['edition'], book['author'], book['dept'], book['num'], book['isbn'], book['price'], user['name']]
-            if len(csv_list) <= i:
+            book_csv = [book['title'] + book['edition'], book['author'], book['dept'], book['num'], book['isbn'], book['price'], '']
+
+            if i == 0:
+                book_csv[len(book_csv)-1] = user['name']
+
+            if len(csv_list) <= i + 1:
                 csv_list.append(book_csv)
             else:
-                csv_list[i].extend(book_csv)
+                csv_list[i+1].extend(book_csv)
 
     with open(filename, 'w') as file:
         book_writer = csv.writer(file)
@@ -104,11 +109,11 @@ def write_all_books(filename, users):
 
 def get_all_csv_users():
     users = []
-    file_name = 'input/courses.csv'
-    users.append({
-        "name": file_name,
-        "books": get_all_courses(file_name)
-    })
+    for file_name in glob.glob('input/*.csv'):
+        users.append({
+            "name": file_name.replace(".csv", "").replace("input/", ""),
+            "books": get_all_courses(file_name)
+        })
 
     users.sort(key=lambda o: len(o["books"]), reverse=True)
 
