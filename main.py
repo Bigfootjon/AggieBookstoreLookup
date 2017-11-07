@@ -79,22 +79,34 @@ def get_all_courses(filename):
     return all_courses
 
 
-def write_all_books(filename, all_courses):
+def write_all_books(filename, users):
+    csv_list = []
+
+    header_template = ["Book Title", "Author", "Department", "Course", "ISBN", "Amount", "In Library"]
+
+    for user in users:
+        if len(csv_list) == 0:
+            csv_list.append(header_template)
+        else:
+            csv_list[0].extend(header_template)
+        for i, book in enumerate(user['books']):
+            book_csv = [book['title'] + book['edition'], book['author'], book['dept'], book['num'], book['isbn'], book['price'], user['name']]
+            if len(csv_list) <= i:
+                csv_list.append(book_csv)
+            else:
+                csv_list[i].extend(book_csv)
+
     with open(filename, 'w') as file:
-        header = ["Book Title", "Author", "Department", "Course", "ISBN", "Amount", "In Library"]
-
         book_writer = csv.writer(file)
-        book_writer.writerow(header)
-
-        for book in all_courses:
-            book_writer.writerow([book['title'] + book['edition'], book['author'], book['dept'], book['num'], book['isbn'], book['price'], ''])
+        for csv_row in csv_list:
+            book_writer.writerow(csv_row)
 
 
 def get_all_csv_users():
     users = []
     file_name = 'input/courses.csv'
     users.append({
-        "user": file_name,
+        "name": file_name,
         "books": get_all_courses(file_name)
     })
     return users
@@ -102,4 +114,4 @@ def get_all_csv_users():
 
 if __name__ == '__main__':
     users = get_all_csv_users()
-    write_all_books('books.csv', users[0]['books'])
+    write_all_books('books.csv', users)
