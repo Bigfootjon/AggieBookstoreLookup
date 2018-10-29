@@ -1,2 +1,2 @@
-requests==2.18
+requests
 beautifulsoup4
